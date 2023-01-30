@@ -1,0 +1,54 @@
+# Question 1: 
+--iidfile		Write the image ID to the file
+
+# Question 2:
+3 python packages (python, pandas, psycopg2)
+
+# Question 3:
+SELECT COUNT(1)
+FROM green_taxi_data
+WHERE CAST(lpep_pickup_datetime AS date) = '2019-01-15'
+AND CAST(lpep_dropoff_datetime AS date) = '2019-01-15'
+
+# Question 4:
+SELECT 
+    CAST(lpep_pickup_datetime as date),
+    MAX(trip_distance)
+FROM green_taxi_data
+GROUP BY CAST(lpep_pickup_datetime AS date)
+ORDER BY MAX(trip_distance) DESC
+
+# Question 5:
+SELECT
+    CAST(lpep_pickup_datetime AS date),
+    COUNT(1)
+FROM green_taxi_data
+WHERE CAST(lpep_pickup_datetime AS date) = '2019-01-01'
+AND passenger_count = 2
+GROUP BY CAST(lpep_pickup_datetime AS date)
+
+
+# Question 6:
+WITH cte_t AS
+(
+SELECT
+    gtd."PULocationID",
+    gtd."DOLocationID",
+    gtd.tip_amount,
+    tz1."Zone" as pu_zone,
+    tz2."Zone" as do_zone
+FROM green_taxi_data gtd
+JOIN taxi_zone tz1
+ on gtd."PULocationID" = tz1."LocationID"
+JOIN taxi_zone tz2
+ on gtd."DOLocationID" = tz2."LocationID"
+)
+
+SELECT
+    do_zone,
+    max(tip_amount)
+FROM cte_t
+WHERE pu_zone = 'Astoria'
+GROUP BY do_zone
+ORDER BY MAX(tip_amount) DESC
+
